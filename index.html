@@ -1,21 +1,145 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de sesión</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Menú Principal</title>
+  <link rel="icon" href="res/logo.png" type="image/x-icon">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Punto Sushi</h2>
-        <input type="text" id="usuario" placeholder="Usuario">
-        <input type="password" id="contrasena" placeholder="Contraseña">
-        <button id="btnLogin">Iniciar Sesión</button>
-        <button id="btnRecuperar" class="secondary">Recuperar Contraseña</button>
-        <p id="mensaje"></p>
+  <nav id="sidebar">
+    <button id="toggle-btn"><i data-lucide="menu"></i></button>
+    <ul>
+      <li data-target="orders"><i data-lucide="eye"></i><span>Visualizar Pedido</span></li>
+      <li data-target="add_order"><i data-lucide="plus-square"></i><span>Agregar Pedido</span></li>
+      <li data-target="stock_man"><i data-lucide="package"></i><span>Control de Stock</span></li>
+      <li data-target="active_orders"><i data-lucide="list"></i><span>Órdenes Activas</span></li>
+      <li data-target="store_configuration"><i data-lucide="settings"></i><span>Configurar Tienda</span></li>
+      <li data-target="report"><i data-lucide="bar-chart"></i><span>Reporte</span></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="activity_panel" id="orders">
+      <h1>ÓRDENES ACTIVAS</h1>
+        <!-- TEST -->
+        <ul class="order_list">
+          <li>
+            <span class="order_number">001</span>
+            <span class="order_product_type sushi">Sushi</span>
+            <span class="order_product_category">Pollo - Palta - Nori</span>
+            <span class="order_product_extra no_queso">Sin Queso</span>
+            <span class="order_wait_time">12m 32s</span>
+          </li>
+          <li>
+            <span class="order_number">001</span>
+            <span class="order_product_type completo">Completo</span>
+            <span class="order_product_category">Italiano</span>
+            <span class="order_wait_time">12m 32s</span>
+          </li>
+          <li>
+            <span class="order_number">002</span>
+            <span class="order_product_type churrasco">Churrasco</span>
+            <span class="order_product_category">Tomate Mayo</span>
+            <span class="order_product_extra no_mayo">Sin Mayo</span>
+            <span class="order_wait_time">12m 32s</span>
+          </li>
+          <li>
+            <span class="order_number">003</span>
+            <span class="order_product_type completo">Completo</span>
+            <span class="order_product_category">Palta Mayo</span>
+            <span class="order_product_extra mayo_casera">Mayo Casera</span>
+            <span class="order_wait_time">12m 32s</span>
+          </li>
+        </ul>
+        <!-- FIN TEST -->
     </div>
 
-    <script src="script.js"></script>
+    <div class="activity_panel" id="add_order">
+      <h1>INGRESAR PEDIDO</h1>
+      <div class="order_stepper"></div><!-- TODO hacer el stepper-->
+
+      <div class="product_option" id="sushi">
+        <h3>Sushi</h3>
+      </div>
+
+      <div class="product_option" id="handroll">
+        <h3>Handroll</h3>
+      </div>
+
+      <div class="product_option" id="sushiburger">
+        <h3>SushiBurger</h3>
+      </div>
+
+      <div class="product_option" id="completo">
+        <h3>Completo</h3>
+      </div>
+
+      <div class="product_option" id="lomo">
+        <h3>Lomo</h3>
+      </div>
+
+      <div class="product_option" id="churrasco">
+        <h3>Churrasco</h3>
+      </div>
+    </div>
+
+    <div class="activity_panel" id="stock_man">
+      <div class="stock_cat">
+        <h2>Proteínas</h2>
+        <ul>
+          <li>Pollo<input type="number" id="stock_pollo">gr</li>
+          <li>Camarón<input type="number" id="stock_camaron">gr</li>
+          <li>Salmón<input type="number" id="stock_salmon">gr</li>
+        </ul>
+      </div>
+
+      <div class="stock_cat">
+        <h2>Vegetales</h2>
+        <ul>
+          <li>Palta<input type="number" id="stock_palta">un</li>
+          <li>Cebollín<input type="number" id="stock_cebollin">gr</li>
+          <li>Champiñon<input type="number" id="stock_champi">gr</li>
+        </ul>
+      </div>
+
+      <div class="stock_cat">
+        <h2>Otros</h2>
+        <ul>
+          <li>Tempura<input type="number" id="stock_tempura">gr</li>
+          <li>Merkén<input type="number" id="stock_merken">gr</li>
+          <li>Sésamo<input type="number" id="stock_sesamo">gr</li>
+        </ul>
+      </div>
+
+      <div class="stock_cat">
+        <h2>Acompañamientos</h2>
+        <ul>
+          <li>Coca-Cola lata 350cc<input type="number" id="stock_coca_lata">un</li>
+          <li>Coca-Cola botella 500ml <input type="number" id="stock_coca_bote">un</li>
+          <li>Fanta lata 350cc<input type="number" id="stock_fanta_lata">un</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="activity_panel" id="active_orders">
+      <h1>ORDENES ACTIVAS</h1>
+      <ul>
+        <li>#001 [Detalle] <div class="order_status">Cocinándose</div></li>
+      </ul>
+    </div>
+
+    <div class="activity_panel" id="store_configuration">
+
+    </div>
+
+    <div class="activity_panel" id="report" style="display:none;">
+      <h1>REPORTE</h1>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>

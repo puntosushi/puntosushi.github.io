@@ -1,97 +1,145 @@
-/* Estilo general */
+@import url('https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap');
+
+* {
+  font-family: "Martian Mono", monospace;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #3f51b5, #2196f3);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
+  margin: 0;
+  font-family: sans-serif;
+  display: flex;
+  height: 100vh;
 }
 
-/* Caja flotante del login */
-.login-container {
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 300px;
+/* === SIDEBAR === */
+#sidebar {
+  width: 220px;
+  background-color: #1e1e2f;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s;
+  overflow: hidden;
 }
 
-.login-container h2 {
-    margin-bottom: 20px;
+#sidebar.collapsed {
+  width: 60px;
 }
 
-.login-container input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+#toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 15px;
+  text-align: left;
+  font-size: 18px;
 }
 
-.login-container button {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    margin-top: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.2s;
+#sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-#btnLogin {
-    background-color: #2196f3;
-    color: white;
+#sidebar li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-#btnLogin:hover {
-    background-color: #1976d2;
+#sidebar li:hover {
+  background-color: #2f2f47;
 }
 
-.secondary {
-    background-color: #eee;
+#sidebar li i {
+  width: 20px;
+  height: 20px;
 }
 
-.secondary:hover {
-    background-color: #ddd;
+#sidebar.collapsed li span {
+  display: none;
 }
 
-#mensaje {
-    color: red;
-    font-size: 14px;
-    margin-top: 10px;
+/* === MAIN === */
+main {
+  flex: 1;
+  background: #0f0e0c;
+  color: white;
+  padding: 0 20px;
+  overflow-y: auto;
 }
 
-/* Página principal */
-.main-container {
-    text-align: center;
-    color: white;
+.activity_panel {
+  display: none;
 }
 
-.buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 30px;
+.activity_panel.active {
+  display: block;
 }
 
-.buttons button {
-    background-color: white;
-    color: #2196f3;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    padding: 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
+
+/* === ORDENES ACTIVAS === */
+.order_list {
+  padding: 0;
+  list-style-type: none;
 }
 
-.buttons button:hover {
-    background-color: #e3f2fd;
+.order_list li {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border-top: 1px solid #ddd;
+  align-items: center;
+
+  font-size: 40px;
+}
+
+.order_number {
+  padding: 10px 20px;
+  border-radius: 40px;
+  background: #2f2f47;
+  font-size: 30px;
+}
+
+/* TIPOS DE PRODUCTO */
+.order_product_type {
+  padding: 10px 20px;
+  border-radius: 40px;
+  background: #2f2f47;
+}
+
+.order_product_type.sushi { background-color: #e74c3c; }
+.order_product_type.handroll { background-color: #9b59b6; }
+.order_product_type.sushiburger { background-color: #f39c12; }
+.order_product_type.completo { background-color: #27ae60; }
+.order_product_type.lomo { background-color: #2980b9; }
+.order_product_type.churrasco { background-color: #c0392b; }
+
+.order_product_category {
+  padding: 10px 20px;
+  border-radius: 40px;
+  background: #2f2f47;
+}
+
+/* ANOTACIONES EXTRA */
+.order_product_extra {
+  padding: 10px 20px;
+  border-radius: 40px;
+  background: #2f2f47;
+}
+
+.order_product_extra.no_mayo { background-color: #e74c3c; }
+.order_product_extra.no_queso { background-color: #e74c3c; }
+.order_product_extra.no_nori { background-color: #e74c3c; }
+.order_product_extra.mayo_casera { background-color: #f39c12; }
+
+.order_list li .order_wait_time {
+  margin-left: auto;
+  font-weight: bold;
+
+  font-size: 22px;
 }

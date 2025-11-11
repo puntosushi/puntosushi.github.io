@@ -1,24 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const btnLogin = document.getElementById("btnLogin");
-    const btnRecuperar = document.getElementById("btnRecuperar");
-    const mensaje = document.getElementById("mensaje");
+  lucide.createIcons();
 
-    btnLogin.addEventListener("click", () => {
-        const usuario = document.getElementById("usuario").value.trim();
-        const contrasena = document.getElementById("contrasena").value.trim();
+  const sidebar = document.getElementById("sidebar");
+  const toggleBtn = document.getElementById("toggle-btn");
+  const menuItems = document.querySelectorAll("#sidebar li");
+  const panels = document.querySelectorAll(".activity_panel");
 
-        // Datos de ejemplo
-        const userDemo = "admin";
-        const passDemo = "1234";
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("collapsed");
+  });
 
-        if (usuario === userDemo && contrasena === passDemo) {
-            window.location.href = "main.html"; // Redirigir a la página principal
-        } else {
-            mensaje.textContent = "Usuario o contraseña incorrectos";
-        }
+  menuItems.forEach(item => {
+    item.addEventListener("click", () => {
+      const target = item.getAttribute("data-target");
+      panels.forEach(p => p.classList.remove("active"));
+      document.getElementById(target).classList.add("active");
     });
+  });
 
-    btnRecuperar.addEventListener("click", () => {
-        alert("Función de recuperación aún no implementada.");
-    });
+  // Mostrar el primero al iniciar
+  document.getElementById("orders").classList.add("active");
 });
