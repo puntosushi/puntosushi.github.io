@@ -58,32 +58,72 @@
     </div>
 
     <div class="activity_panel" id="add_order">
-      <h1>INGRESAR PEDIDO</h1>
-      <div class="order_stepper"></div><!-- TODO hacer el stepper-->
+    <div id="add_order_container">
+      <div id="detail_order_panel">
+        <h1>INGRESAR PEDIDO</h1>
+        <div class="order_stepper"></div><!-- TODO hacer el stepper-->
 
-      <div class="product_option" id="sushi">
-        <h3>Sushi</h3>
-      </div>
+        <div id="products_panel">
+          <div class="product_option" id="sushi">
+            <img src="res/sushi.png" alt="sushi">
+            <h3>Sushi</h3>
+          </div>
 
-      <div class="product_option" id="handroll">
-        <h3>Handroll</h3>
-      </div>
+          <div class="product_option" id="handroll">
+            <img src="res/handroll.png" alt="handroll">
+            <h3>Handroll</h3>
+          </div>
 
-      <div class="product_option" id="sushiburger">
-        <h3>SushiBurger</h3>
-      </div>
+          <div class="product_option" id="sushiburger">
+            <img src="res/sushiburger.png" alt="sushiburger">
+            <h3>SushiBurger</h3>
+          </div>
 
-      <div class="product_option" id="completo">
-        <h3>Completo</h3>
-      </div>
+          <div class="product_option" id="completo">
+            <img src="res/salchicha.png" alt="salchicha">
+            <h3>Completo</h3>
+          </div>
 
-      <div class="product_option" id="lomo">
-        <h3>Lomo</h3>
-      </div>
+          <div class="product_option" id="lomo">
+            <img src="res/lomito.png" alt="lomito">
+            <h3>Lomo</h3>
+          </div>
 
-      <div class="product_option" id="churrasco">
-        <h3>Churrasco</h3>
+          <div class="product_option" id="churrasco">
+            <img src="res/churrasco.png" alt="churrasco">
+            <h3>Churrasco</h3>
+          </div>
+
+          <div class="product_option" id="snack">
+            <img src="res/snacks.png" alt="snack">
+            <h3>Snack</h3>
+          </div>
+
+          <div class="product_option" id="bebestible">
+            <img src="res/bebestible.png" alt="bebestible">
+            <h3>Bebestible</h3>
+          </div>
+
+          <div class="product_option" id="aderezo">
+            <img src="res/aderezos.png" alt="aderezo">
+            <h3>Aderezo</h3>
+          </div>
+
+        </div>
       </div>
+      <!-- LATERAL DE REUMEN DEL PEDIDO -->
+      <div id="summary_order_panel">
+        <h3>RESUMEN PEDIDO</h3>
+        <ul>
+          <li>
+            <span class="order_mult">x1</span>
+            <span class="order_product">Completo Italiano</span>
+            <span class="order_value">$1.000</span>
+          </li>
+        </ul>
+        <h3 class="order_total_continer">Total: <span id="order_total_value">$1.000</span></h3>
+      </div>
+    </div>
     </div>
 
     <div class="activity_panel" id="stock_man">
