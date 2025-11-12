@@ -127,40 +127,45 @@
     </div>
 
     <div class="activity_panel" id="stock_man">
-      <div class="stock_cat">
-        <h2>Proteínas</h2>
-        <ul>
-          <li>Pollo<input type="number" id="stock_pollo">gr</li>
-          <li>Camarón<input type="number" id="stock_camaron">gr</li>
-          <li>Salmón<input type="number" id="stock_salmon">gr</li>
-        </ul>
-      </div>
+      <h1>CONTROL DE STOCK</h1>
+      <div id="stock_panel">
+        <div class="stock_cat">
+          <h2>Proteínas</h2>
+          <ul>
+            <li><span title="Pollo">Pollo</span><input type="number" class="stock_counter" id="stock_pollo"> gr</li>
+            <li><span title="Camarón">Camarón</span><input type="number" class="stock_counter" id="stock_camaron"> gr</li>
+            <li><span title="Salmón">Salmón</span><input type="number" class="stock_counter" id="stock_salmon"> gr</li>
+          </ul>
+        </div>
 
-      <div class="stock_cat">
-        <h2>Vegetales</h2>
-        <ul>
-          <li>Palta<input type="number" id="stock_palta">un</li>
-          <li>Cebollín<input type="number" id="stock_cebollin">gr</li>
-          <li>Champiñon<input type="number" id="stock_champi">gr</li>
-        </ul>
-      </div>
+        <div class="stock_cat">
+          <h2>Vegetales</h2>
+          <ul>
+            <li><span title="Palta">Palta</span><input type="number" class="stock_counter" id="stock_palta"> un</li>
+            <li><span title="Cebollín">Cebollín</span><input type="number" class="stock_counter" id="stock_cebollin"> gr</li>
+            <li><span title="Champiñón">Champiñón</span><input type="number" class="stock_counter" id="stock_champi"> gr</li>
+          </ul>
+        </div>
 
-      <div class="stock_cat">
-        <h2>Otros</h2>
-        <ul>
-          <li>Tempura<input type="number" id="stock_tempura">gr</li>
-          <li>Merkén<input type="number" id="stock_merken">gr</li>
-          <li>Sésamo<input type="number" id="stock_sesamo">gr</li>
-        </ul>
-      </div>
+        <div class="stock_cat">
+          <h2>Otros</h2>
+          <ul>
+            <li><span title="Tempura">Tempura</span><input type="number" class="stock_counter" id="stock_tempura"> gr</li>
+            <li><span title="Merkén">Merkén</span><input type="number" class="stock_counter" id="stock_merken"> gr</li>
+            <li><span title="Sésamo">Sésamo</span><input type="number" class="stock_counter" id="stock_sesamo"> gr</li>
+          </ul>
+        </div>
 
-      <div class="stock_cat">
-        <h2>Acompañamientos</h2>
-        <ul>
-          <li>Coca-Cola lata 350cc<input type="number" id="stock_coca_lata">un</li>
-          <li>Coca-Cola botella 500ml <input type="number" id="stock_coca_bote">un</li>
-          <li>Fanta lata 350cc<input type="number" id="stock_fanta_lata">un</li>
-        </ul>
+        <div class="stock_cat">
+          <h2>Acompañamientos</h2>
+          <ul>
+            <li><span title="Coca-Cola lata 350cc">Coca-Cola lata 350cc</span><input type="number" class="stock_counter" id="stock_coca_lata"> un</li>
+            <li><span title="Coca-Cola botella 500ml">Coca-Cola botella 500ml</span><input type="number" class="stock_counter" id="stock_coca_bote"> un</li>
+            <li><span title="Fanta lata 350cc">Fanta lata 350cc</span><input type="number" class="stock_counter" id="stock_fanta_lata"> un</li>
+          </ul>
+        </div>
+
+        <button id="confirm_stock_btn">Confirmar cambios</button>
       </div>
     </div>
 

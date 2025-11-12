@@ -11,8 +11,11 @@ body {
   height: 100vh;
 }
 
-/* === SIDEBAR === */
+div { user-select: none; }
+
+/* === BARRALATERALLLL === */
 #sidebar {
+  user-select: none;
   width: 220px;
   background-color: #1e1e2f;
   color: white;
@@ -94,7 +97,6 @@ main {
   padding: 8px;
   border-top: 1px solid #ddd;
   align-items: center;
-
   font-size: 40px;
 }
 
@@ -139,7 +141,6 @@ main {
 
 .order_list li .order_wait_time {
   margin-left: auto;
-
   font-size: 22px;
 }
 
@@ -223,6 +224,11 @@ main {
   object-fit: contain;
   filter: brightness(0.4);
   transition: filter 0.3s ease, transform 0.3s ease;
+
+  /* Para evitar que se pueda seleccionar la foto */
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none; 
 }
 
 .product_option:hover {
@@ -233,4 +239,74 @@ main {
 .product_option:hover img {
   filter: brightness(1);
   transform: scale(1.1);
+}
+
+
+/* === STOCKMAN === */
+#stock_panel {
+  display: grid;
+  height: 86vh;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 15fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.stock_cat {
+  border: 2px solid rgb(20, 20, 31);
+  background: rgb(22, 22, 34);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.stock_cat h2 { margin-top: 0; }
+
+.stock_cat ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+.stock_cat li {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  border-top: 1px solid #ddd;
+  gap: 6px;
+}
+
+/* === NUEVO: texto truncado con tooltip === */
+.stock_cat li span {
+  display: inline-block;
+  max-width: 19ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.stock_counter {
+  width: 20%;
+  margin-left: auto;
+  margin-right: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background: rgb(22, 22, 34);
+  color: white;
+}
+
+#confirm_stock_btn {
+  grid-column: 1 / -1;
+  justify-self: center;
+  padding: 10px 25px;
+  background-color: #2e86de;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#confirm_stock_btn:hover {
+  background-color: #1b4f9c;
 }
