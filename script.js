@@ -130,7 +130,7 @@ function addToSummary(name, price) {
   const li = document.createElement("li");
 
   li.innerHTML = `
-    <span class="order_product">${name}</span>
+    <span class="order_product_summary">${name}</span>
     <span class="order_value">$${price.toLocaleString()}</span>
   `;
 
@@ -202,3 +202,27 @@ function onStepChange(step) {
 
 // Inicializa en productos
 activateStepper("productos");
+
+
+// BOTON DE CONFIRMAR PEDIDO
+// Visual de carga 
+const confirmBtn = document.getElementById("order_confirm");
+
+let holdTimer;
+
+confirmBtn.addEventListener("mousedown", () => {
+  confirmBtn.classList.add("loading");
+
+  holdTimer = setTimeout(() => {
+    console.log("Acción confirmada después de 2s");
+    // acción final aquí
+  }, 2000);
+});
+
+confirmBtn.addEventListener("mouseup", cancelHold);
+confirmBtn.addEventListener("mouseleave", cancelHold);
+
+function cancelHold() {
+  clearTimeout(holdTimer);
+  confirmBtn.classList.remove("loading");
+}

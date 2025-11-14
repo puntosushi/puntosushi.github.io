@@ -13,6 +13,15 @@ body {
 
 div { user-select: none; }
 
+span .yellow {color: yellow;}
+span .gold {color: gold}
+span .green {color: green;}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #1e1e2f; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #888;border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
 /* === BARRALATERALLLL === */
 #sidebar {
   user-select: none;
@@ -411,7 +420,21 @@ main {
 }
 
 /* Preferencias de producto */
-.order_product { border-top: 2px solid #2f2f47; }
+
+#preferences_panel {
+  display: flex;
+  flex-direction: column; /* o row, según tu diseño */
+  height: 700px;          /* altura fija */
+  overflow-y: auto;       /* habilita scroll vertical */
+  overflow-x: hidden;     /* opcional */
+  margin-right: 20px;
+}
+
+
+.order_product { 
+  border-top: 2px solid #888;
+  margin-bottom: 20px;
+}
 
 .order_product h3 {
   display: flex;
@@ -420,7 +443,8 @@ main {
 }
 
 .delete_product {
-  margin-left: 50px;
+  margin-left: auto;
+  margin-right: 50%;
   font-size: 12px;
   color: #2f2f47;
 }
@@ -458,4 +482,67 @@ main {
   border: 2px solid white;
   border-radius: 20px;
   padding: 10px 20px;
+}
+
+/* RESUMEN FINAL DE LOS PEDIDOS */
+.summary_detail {
+  display: flex;
+  flex-direction: column; /* o row, según tu diseño */
+  height: 600px;          /* altura fija */
+  overflow-y: auto;       /* habilita scroll vertical */
+  overflow-x: hidden;     /* opcional */
+  margin-right: 20px;
+}
+
+.summary_detail ul{ list-style: none; padding-left: 0;}
+.summary_detail ul li{ margin-bottom: 5px;}
+
+#order_confirm {
+  position: relative;
+  overflow: hidden;
+  height: 40px;
+  width: 300px;
+  margin: 0 38%;
+  border-radius: 20px;
+  border: 2px solid green;
+  background-color: #0f0e0c;
+  color: green;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.3s, color 0.3s;
+}
+
+#order_confirm:hover {
+  transform: scale(1.05);
+  color: rgb(0, 196, 0);
+  border-color: rgb(0, 196, 0);
+}
+
+/* Barra de carga */
+#order_confirm::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background-color: rgb(0, 196, 0);
+  z-index: 0;
+  transition: width 2s linear;
+}
+
+/* Cuando está cargando */
+#order_confirm.loading::before {
+  width: 100%;
+}
+
+/* Texto encima */
+#order_confirm span {
+  position: relative;
+  z-index: 1;
+  transition: color 0.2s linear;
+}
+
+/* Texto se vuelve NEGRO cuando el botón está en modo carga */
+#order_confirm.loading span {
+  color: black;
 }
