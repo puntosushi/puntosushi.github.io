@@ -310,3 +310,47 @@ main {
 #confirm_stock_btn:hover {
   background-color: #1b4f9c;
 }
+
+
+/* Overlay oscuro */
+#product_dialog_overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Panel */
+#product_dialog {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  min-width: 320px;
+  max-width: 420px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+#dialog_title {
+  margin-top: 0;
+  text-align: center;
+}
+
+.dialog_option_btn {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  border: none;
+  border-radius: 6px;
+  background: #e5e5e5;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.dialog_option_btn:hover {
+  background: #d2d2d2;
+}
