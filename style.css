@@ -319,6 +319,7 @@ main {
   width: 100vw;
   height: 100vh;
   background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(5px);
   display: none;
   justify-content: center;
   align-items: center;
@@ -327,12 +328,13 @@ main {
 
 /* Panel */
 #product_dialog {
-  background: #fff;
+  background: rgb(22, 22, 34);
   padding: 20px;
   border-radius: 12px;
   min-width: 320px;
   max-width: 420px;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  font-weight: normal;
 }
 
 #dialog_title {
@@ -341,16 +343,119 @@ main {
 }
 
 .dialog_option_btn {
+  color: white;
   width: 100%;
   padding: 12px;
   margin: 6px 0;
   border: none;
   border-radius: 6px;
-  background: #e5e5e5;
+  background: #1e1e2f;
   cursor: pointer;
   font-size: 16px;
+  font-weight: normal;
 }
 
 .dialog_option_btn:hover {
-  background: #d2d2d2;
+  background: rgb(40, 40, 66);;
+}
+
+
+/* STEPPER */
+#circle_stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 15%;
+  user-select: none;
+}
+
+#circle_stepper .step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+#circle_stepper .circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid #888;
+  background: #2f2f47;
+  transition: all 0.25s ease;
+}
+
+#circle_stepper .step.active .circle {
+  border-color: #2e86de;
+  background: #2e86de;
+}
+
+#circle_stepper .step span {
+  margin-top: 8px;
+  font-size: 14px;
+  text-align: center;
+  width: 120px;
+  color: #aaa;
+  transition: color 0.25s ease;
+}
+
+#circle_stepper .step.active span {
+  color: white;
+}
+
+#circle_stepper .line {
+  flex: 1;
+  height: 3px;
+  background: #555;
+}
+
+/* Preferencias de producto */
+.order_product { border-top: 2px solid #2f2f47; }
+
+.order_product h3 {
+  display: flex;
+  margin: 10px 0 0;
+  align-items: center;
+}
+
+.delete_product {
+  margin-left: 50px;
+  font-size: 12px;
+  color: #2f2f47;
+}
+
+.delete_product:hover {
+  color: tomato;
+  transform: scale(1.1);
+}
+
+.product_preferences_panel {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.product_preference select{
+  background-color: #0f0e0c;
+  color: white;
+} 
+
+.product_preference_bool {
+  display: flex;
+  align-items: center;
+}
+
+.product_preference_bool span {
+  color: rgb(70, 70, 106);
+  border: 2px solid #1e1e2f;
+  border-radius: 20px;
+  padding: 10px 20px;
+}
+
+.product_preference_bool span.active {
+  color: white;
+  border: 2px solid white;
+  border-radius: 20px;
+  padding: 10px 20px;
 }

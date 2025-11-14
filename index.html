@@ -61,9 +61,30 @@
     <div id="add_order_container">
       <div id="detail_order_panel">
         <h1>INGRESAR PEDIDO</h1>
-        <div class="order_stepper"></div><!-- TODO hacer el stepper-->
 
-        <div id="products_panel">
+        <div id="circle_stepper">
+          <div class="step" data-id="productos">
+            <div class="circle"></div>
+            <span>Elegir Producto</span>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="step" data-id="preferencias">
+            <div class="circle"></div>
+            <span>Preferencias del Producto</span>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="step" data-id="resumen">
+            <div class="circle"></div>
+            <span>Resumen</span>
+          </div>
+        </div>
+        
+        <!-- PANEL DE ÓRDENES : PEDIDOS -->
+        <div class="order_step_panel" id="products_panel">
           <div class="product_option" id="sushi">
             <img src="res/sushi.png" alt="sushi">
             <h3>Sushi</h3>
@@ -79,9 +100,9 @@
             <h3>SushiBurger</h3>
           </div>
 
-          <div class="product_option" id="completo">
-            <img src="res/salchicha.png" alt="salchicha">
-            <h3>Completo</h3>
+          <div class="product_option" id="vianesa">
+            <img src="res/salchicha.png" alt="vianesa">
+            <h3>Vianesa</h3>
           </div>
 
           <div class="product_option" id="lomo">
@@ -110,18 +131,121 @@
           </div>
 
         </div>
+
+        <!-- PANEL DE ÓRDENES : PREFERENCIAS -->
+        <div class="order_step_panel" id="preferences_panel">
+          
+          <div class="order_product">
+            <h3>Sushi : Roll 1 <span class="delete_product">[ELIMINAR PRODUCTO]</span></h3>
+            <div class="product_preferences_panel">
+              <div class="product_preference">
+                <p>Proteína</p>
+                <select name="protein">
+                  <option value="pollo">Pollo</option>
+                  <option value="pollo_ter">Pollo Ter</option>
+                  <option value="pollo_apa">Pollo Apa +$500</option>
+                  <option value="camaron">Camarón</option>
+                  <option value="camaron_apa">Camarón Apa +$500</option>
+                  <option value="salmon">Salmón</option>
+                  <option value="salmon_apa">Salmón Apa +$500</option>
+                  <option value="vacuno">Vacuno</option>
+                  <option value="lomo">Lomo</option>
+                  <option value="kanikama">Kanikama</option>
+                  <option value="kanikama_apa">Kanikama_apa +$500</option>
+                </select>
+              </div>
+
+              <div class="product_preference">
+                <p>[+]Proteína +$700</p>
+                <select name="extra_protein">
+                  <option value="none">-</option>
+                  <option value="pollo">Pollo</option>
+                  <option value="pollo_ter">Pollo Ter</option>
+                  <option value="pollo_apa">Pollo Apa +$500</option>
+                  <option value="camaron">Camarón</option>
+                  <option value="camaron_apa">Camarón Apa +$500</option>
+                  <option value="salmon">Salmón</option>
+                  <option value="salmon_apa">Salmón Apa +$500</option>
+                  <option value="vacuno">Vacuno</option>
+                  <option value="lomo">Lomo</option>
+                  <option value="kanikama">Kanikama</option>
+                  <option value="kanikama_apa">Kanikama_apa +$500</option>
+                </select>
+              </div>
+
+              <div class="product_preference">
+                <p>Vegetal</p>
+                <select name="vegie">
+                  <option value="cebollin">Cebollín</option>
+                  <option value="ciboulette">Ciboulette</option>
+                  <option value="champ">Champiñón</option>
+                  <option value="choclo">Choclo</option>
+                  <option value="palta">Palta</option>
+                  <option value="aceituna">Aceituna</option>
+                  <option value="palmito">Palmito</option>
+                  <option value="choclito">Choclito</option>
+                  <option value="pimenton">Pimentón</option>
+                </select>
+              </div>
+
+              <div class="product_preference">
+                <p>[+]Vegetal +$500</p>
+                <select name="vegie">
+                  <option value="none">-</option>
+                  <option value="cebollin">Cebollín</option>
+                  <option value="ciboulette">Ciboulette</option>
+                  <option value="champ">Champiñón</option>
+                  <option value="choclo">Choclo</option>
+                  <option value="palta">Palta</option>
+                  <option value="aceituna">Aceituna</option>
+                  <option value="palmito">Palmito</option>
+                  <option value="choclito">Choclito</option>
+                  <option value="pimenton">Pimentón</option>
+                </select>
+              </div>
+
+              <div class="product_preference">
+                <p>Envolturas</p>
+                <select name="rolling">
+                  <option value="tempura">Tempura</option>
+                  <option value="temp_merk">Tempura Merkén</option>
+                  <option value="sesamo_negro">Sésamo Negro</option>
+                  <option value="sesamo_tostado">Sésamo Tostado</option>
+                  <option value="sesamo_mix">Sésamo Mixto</option>
+                  <option value="ciboulette">Ciboulette</option>
+                  <option value="nori">Nori</option>
+                  <option value="furay">Furay +$500</option>
+                  <option value="palta">Palta +$1.000</option>
+                  <option value="queso">Queso +$1.500</option>
+                  <option value="queso_pal">Queso Palta +$2.500</option>
+                  <option value="mango">Mango +$1.500</option>
+                </select>
+              </div>
+
+              <div class="product_preference_bool"><span>Sin Queso</span></div>
+
+              <div class="product_preference_bool"><span>Sin Nori +$500</span></div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PANEL DE ÓRDENES : RESUMEN FINAL -->
+        <div class="order_step_panel" id="summary_panel">
+          <h2>RESUMEN</h2>
+        </div>
+
       </div>
       <!-- LATERAL DE REUMEN DEL PEDIDO -->
       <div id="summary_order_panel">
         <h3>RESUMEN PEDIDO</h3>
         <ul>
           <li>
-            <span class="order_mult">x1</span>
-            <span class="order_product">Completo Italiano</span>
-            <span class="order_value">$1.000</span>
+            
           </li>
         </ul>
-        <h3 class="order_total_continer">Total: <span id="order_total_value">$1.000</span></h3>
+        <h3 class="order_total_continer">Total: <span id="order_total_value">$0</span></h3>
       </div>
     </div>
     </div>

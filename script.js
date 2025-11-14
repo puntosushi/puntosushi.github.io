@@ -2,9 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
 
   const sidebar = document.getElementById("sidebar");
-  const toggleBtn = document.getElementById("toggle-btn");
   const menuItems = document.querySelectorAll("#sidebar li");
   const panels = document.querySelectorAll(".activity_panel");
+  const toggleBtn = document.getElementById("toggle-btn");
 
   toggleBtn.addEventListener("click", () => {
     sidebar.classList.toggle("collapsed");
@@ -36,20 +36,22 @@ const PRODUCT_DATA = {
     { label: "120 Piezas",  price: 27000 }
   ],
   handroll: [
-    { label: "Pollo - Kanikama", price: 3000, promo: "2x$5000" },
+    { label: "x1 Pollo - Kanikama", price: 3000},
+    { label: "x2 Pollo - Kanikama", price: 5000},
     { label: "Camarón", price: 3500 },
     { label: "Salmón", price: 3500 },
     { label: "Vacuno", price: 3500 }
   ],
   sushiburger: [
-    { label: "SushiBurger", price: 6000, promo: "2x$11000" }
+    { label: "x1", price: 6000},
+    { label: "x2", price: 11000}
   ],
-  completo: [
-    { label: "Italiano", price: 1000 },
+  vianesa: [
+    { label: "Italiana", price: 1000 },
     { label: "Palta Mayo", price: 1200 },
     { label: "Tomate Mayo", price: 1000 },
     { label: "Sólo Vienesa", price: 1000 },
-    { label: "Dinámico", price: 1500 }
+    { label: "Dinámica", price: 1500 }
   ],
   lomo: [
     { label: "Italiano", price: 4000 },
@@ -90,7 +92,7 @@ function openProductDialog(productId, productName) {
   dialogOptions.innerHTML = "";
 
   if (!options || options.length === 0) {
-    dialogOptions.innerHTML = `<p>No hay productos disponibles.</p>`;
+    dialogOptions.innerHTML = `<p>Sin productos para mostrar. Mejora tu plan para agregar productos.</p>`;
   } else {
     options.forEach(opt => {
       const btn = document.createElement("button");
@@ -128,7 +130,6 @@ function addToSummary(name, price) {
   const li = document.createElement("li");
 
   li.innerHTML = `
-    <span class="order_mult">x1</span>
     <span class="order_product">${name}</span>
     <span class="order_value">$${price.toLocaleString()}</span>
   `;
@@ -160,3 +161,44 @@ document.querySelectorAll("#products_panel .product_option").forEach(opt => {
     openProductDialog(id, name);
   });
 });
+
+// STEPPER PARA EL PEDIDO
+const stepper = document.querySelectorAll("#circle_stepper .step");
+
+function activateStepper(targetId) {
+  stepper.forEach(s => {
+    s.classList.toggle("active", s.dataset.id === targetId);
+  });
+
+  // Lógica que tú conectas para mostrar los paneles correctos:
+  onStepChange(targetId);
+}
+
+// Evento: clic en cada círculo
+stepper.forEach(s => {
+  s.addEventListener("click", () => {
+    activateStepper(s.dataset.id);
+  });
+});
+
+// Callback que tú usas para operar los paneles
+function onStepChange(step) {
+
+  // Ocultar los 3 paneles
+  document.getElementById("products_panel").style.display = "none";
+  document.getElementById("preferences_panel").style.display = "none";
+  document.getElementById("summary_panel").style.display = "none";
+
+  // Mostrar según el step seleccionado
+  if (step === "productos")
+    document.getElementById("products_panel").style.display = "grid";
+
+  if (step === "preferencias")
+    document.getElementById("preferences_panel").style.display = "block";
+
+  if (step === "resumen")
+    document.getElementById("summary_panel").style.display = "block";
+}
+
+// Inicializa en productos
+activateStepper("productos");
