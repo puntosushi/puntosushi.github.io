@@ -227,12 +227,13 @@ main {
 }
 
 .product_option img {
-  position: absolute;
+  position: sticky;
   width: 80px;
   height: 80px;
   object-fit: contain;
   filter: brightness(0.4);
   transition: filter 0.3s ease, transform 0.3s ease;
+  align-items: center;
 
   /* Para evitar que se pueda seleccionar la foto */
   -webkit-user-drag: none;
@@ -546,3 +547,4 @@ main {
 #order_confirm.loading span {
   color: black;
 }
+
