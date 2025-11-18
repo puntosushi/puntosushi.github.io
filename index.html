@@ -16,7 +16,11 @@
       <li data-target="add_order"><i data-lucide="plus-square"></i><span>Agregar Pedido</span></li>
       <li data-target="stock_man"><i data-lucide="package"></i><span>Control de Stock</span></li>
       <li data-target="active_orders"><i data-lucide="list"></i><span>Control de Pedidos</span></li>
+<<<<<<< HEAD
       <!--<li data-target="store_configuration"><i data-lucide="settings"></i><span>Configurar Tienda</span></li>-->
+=======
+      <li data-target="store_configuration"><i data-lucide="settings"></i><span>Configurar Tienda</span></li>
+>>>>>>> 5ee8db9e9c824c756c0a3249651947f6e4c89784
       <li data-target="report"><i data-lucide="bar-chart"></i><span>Reporte</span></li>
     </ul>
   </nav>
@@ -474,11 +478,13 @@
 
     </div>
 
+
     <div class="activity_panel" id="report">
-      <h1>REPORTE</h1>
+      <h1>REPORTE COMBINADO</h1>
       <div>Reporte Dia 27/10/2025 <label for="Reporte"></label></div><button id="generate_report_btn">Generar Reporte</button>
       <div>Reporte Día 28/10/2025 <label for="Reporte"></label></div><button id="generate_report_btn">Generar Reporte</button>
       <div>Reporte Día 29/10/2025 <label for="Reporte"></label></div><button id="generate_report_btn">Generar Reporte</button>
+
     </div>
 
         <!-- PANEL FLOTANTE -->
@@ -492,6 +498,7 @@
   </main>
 
   <script src="script.js"></script>
+<<<<<<< HEAD
   <script>
     async function loadDates() {
       const res = await fetch("http://localhost:3001/api/datos");
@@ -499,6 +506,8 @@
       console.log(datos);
     }
   </script>
+=======
+>>>>>>> 5ee8db9e9c824c756c0a3249651947f6e4c89784
 
 </body>
 </html>
