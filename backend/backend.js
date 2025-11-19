@@ -159,7 +159,7 @@ const generateDailyOrderNumber = async (fecha) => {
 };
 
 // AUTHENTICATION ROUTES
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -167,50 +167,17 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(400).json({ error: 'Usuario y contraseña son requeridos' });
         }
 
-        // Mock user for testing without database
-        if (!pool) {
-            if (username === 'admin' && password === 'admin123') {
-                const token = jwt.sign(
-                    { userId: 1, username: 'admin', rol: 'admin' },
-                    process.env.JWT_SECRET,
-                    { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
-                );
+        // Buscar usuario en datos locales
+        const user = localData.usuarios.find(u => u.username === username && u.activo);
 
-                return res.json({
-                    success: true,
-                    token,
-                    user: {
-                        id: 1,
-                        username: 'admin',
-                        rol: 'admin'
-                    }
-                });
-            } else {
-                return res.status(401).json({ error: 'Credenciales inválidas' });
-            }
-        }
-
-        // Database authentication
-        const userResult = await pool.query(
-            'SELECT * FROM usuarios WHERE username = $1 AND activo = true',
-            [username]
-        );
-
-        if (userResult.rows.length === 0) {
-            return res.status(401).json({ error: 'Credenciales inválidas' });
-        }
-
-        const user = userResult.rows[0];
-        const validPassword = await bcrypt.compare(password, user.password_hash);
-
-        if (!validPassword) {
+        if (!user || user.password !== password) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
         const token = jwt.sign(
             { userId: user.id, username: user.username, rol: user.rol },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+            JWT_SECRET,
+            { expiresIn: '24h' }
         );
 
         res.json({
