@@ -136,6 +136,43 @@ app.get('/api/auth/verify', authenticateToken, (req, res) => {
 // ORDERS ROUTES
 app.get('/api/orders/active', authenticateToken, async (req, res) => {
     try {
+        // Mock data for testing without database
+        if (!pool) {
+            const mockOrders = [
+                {
+                    id: 1,
+                    numero_pedido: '0001',
+                    estado: 'en_preparacion',
+                    creado_at: new Date(Date.now() - 5 * 60000).toISOString(),
+                    total: 7000,
+                    detalles: [
+                        {
+                            producto: 'Sushi 24 unidades',
+                            cantidad: 1,
+                            preferencias: { proteina: 'Pollo', vegetal: 'Palta', envoltura: 'Nori' },
+                            subtotal: 7000
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    numero_pedido: '0002',
+                    estado: 'en_preparacion',
+                    creado_at: new Date(Date.now() - 2 * 60000).toISOString(),
+                    total: 3500,
+                    detalles: [
+                        {
+                            producto: 'Handroll Camarón',
+                            cantidad: 1,
+                            preferencias: { proteina: 'Camarón', vegetal: 'Cebollín' },
+                            subtotal: 3500
+                        }
+                    ]
+                }
+            ];
+            return res.json({ success: true, orders: mockOrders });
+        }
+
         const result = await pool.query(`
             SELECT
                 p.id,
