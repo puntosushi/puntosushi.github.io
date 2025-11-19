@@ -15,12 +15,433 @@ document.addEventListener("DOMContentLoaded", () => {
       const target = item.getAttribute("data-target");
       panels.forEach(p => p.classList.remove("active"));
       document.getElementById(target).classList.add("active");
+
+      // Load data for specific panels
+      if (target === "orders") {
+        loadActiveOrders();
+      } else if (target === "stock_man") {
+        loadStockData();
+      } else if (target === "active_orders") {
+        loadOrderManagement();
+      } else if (target === "report") {
+        loadReports();
+      }
     });
   });
 
   // Mostrar el primero al iniciar
   document.getElementById("orders").classList.add("active");
+
+  // Load initial data
+  loadActiveOrders();
 });
+
+// API Configuration
+const API_BASE = 'http://localhost:3001/api';
+
+// Utility function to get auth token
+function getAuthToken() {
+  return localStorage.getItem('token');
+}
+
+// Utility function to make authenticated API calls
+async function apiCall(endpoint, options = {}) {
+  const token = getAuthToken();
+  if (!token) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const defaultOptions = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  };
+
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...defaultOptions,
+      ...options,
+      headers: {
+        ...defaultOptions.headers,
+        ...options.headers
+      }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('API call error:', error);
+    alert('Error de conexión. Intenta nuevamente.');
+    return null;
+  }
+}
+
+// Load and display active orders
+async function loadActiveOrders() {
+  try {
+    const data = await apiCall('/orders/active');
+    if (data && data.success) {
+      displayOrders(data.orders);
+    }
+  } catch (error) {
+    console.error('Error loading active orders:', error);
+  }
+}
+
+// Display orders in the UI
+function displayOrders(orders) {
+  const orderList = document.querySelector('.order_list');
+  if (!orderList) return;
+
+  orderList.innerHTML = '';
+
+  if (orders.length === 0) {
+    orderList.innerHTML = '<li class="no-orders">No hay órdenes activas</li>';
+    return;
+  }
+
+  orders.forEach(order => {
+    const li = document.createElement('li');
+
+    // Extract product names and preferences
+    let productDetails = '';
+    let waitTime = '';
+
+    if (order.detalles && order.detalles.length > 0) {
+      const products = order.detalles.map(detail => {
+        const prefs = detail.preferencias ? JSON.parse(detail.preferencias) : {};
+        let prefText = '';
+
+        if (prefs.proteina) prefText += prefs.proteina + ' - ';
+        if (prefs.vegetal) prefText += prefs.vegetal + ' - ';
+        if (prefs.envoltura) prefText += prefs.envoltura;
+
+        return detail.producto + (prefText ? ' ' + prefText : '');
+      });
+      productDetails = products.join(' ');
+    }
+
+    // Calculate wait time from creation date
+    if (order.creado_at) {
+      const createdTime = new Date(order.creado_at);
+      const currentTime = new Date();
+      const diffMinutes = Math.floor((currentTime - createdTime) / (1000 * 60));
+      const diffSeconds = (currentTime - createdTime) % (1000 * 60);
+      waitTime = `${diffMinutes}m ${Math.floor(diffSeconds / 1000)}s`;
+    }
+
+    // Determine product type for styling
+    let productType = 'completo';
+    if (productDetails.toLowerCase().includes('sushi')) productType = 'sushi';
+    else if (productDetails.toLowerCase().includes('handroll')) productType = 'handroll';
+    else if (productDetails.toLowerCase().includes('lomo')) productType = 'lomo';
+    else if (productDetails.toLowerCase().includes('churrasco')) productType = 'churrasco';
+
+    li.innerHTML = `
+      <span class="order_number">${order.numero_pedido}</span>
+      <span class="order_product_type ${productType}">${productType.charAt(0).toUpperCase() + productType.slice(1)}</span>
+      <span class="order_product_category">${productDetails}</span>
+      <span class="order_wait_time">${waitTime}</span>
+    `;
+
+    orderList.appendChild(li);
+  });
+}
+
+// Load stock data
+async function loadStockData() {
+  try {
+    const data = await apiCall('/stock');
+    if (data && data.success) {
+      displayStockData(data.stock);
+    }
+  } catch (error) {
+    console.error('Error loading stock data:', error);
+  }
+}
+
+// Display stock data in the UI
+function displayStockData(stockData) {
+  const stockPanel = document.getElementById('stock_panel');
+  if (!stockPanel) return;
+
+  const categories = ['Proteínas', 'Vegetales', 'Otros', 'Extras'];
+
+  let html = '';
+  categories.forEach(category => {
+    const items = stockData[category] || [];
+    html += `
+      <div class="stock_cat">
+        <h2>${category}</h2>
+        <ul>
+    `;
+
+    items.forEach(item => {
+      html += `
+        <li>
+          <span title="${item.ingrediente}">${item.ingrediente}</span>
+          <input type="number"
+                 class="stock_counter"
+                 id="stock_${item.id}"
+                 value="${item.cantidad_disponible}"
+                 data-id="${item.id}"
+                 data-category="${category}">
+          <span>${item.unidad}</span>
+        </li>
+      `;
+    });
+
+    html += `
+        </ul>
+      </div>
+    `;
+  });
+
+  html += '<button id="confirm_stock_btn">Confirmar cambios</button>';
+
+  stockPanel.innerHTML = html;
+
+  // Add event listeners for stock inputs
+  document.querySelectorAll('.stock_counter').forEach(input => {
+    input.addEventListener('change', async (e) => {
+      const id = e.target.dataset.id;
+      const newQuantity = parseFloat(e.target.value);
+
+      if (newQuantity < 0) {
+        alert('La cantidad no puede ser negativa');
+        e.target.value = e.target.defaultValue;
+        return;
+      }
+
+      try {
+        const data = await apiCall(`/stock/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ cantidad_disponible: newQuantity })
+        });
+
+        if (data && data.success) {
+          console.log('Stock updated successfully');
+        }
+      } catch (error) {
+        console.error('Error updating stock:', error);
+        e.target.value = e.target.defaultValue;
+      }
+    });
+  });
+
+  // Add event listener for confirm button
+  const confirmBtn = document.getElementById('confirm_stock_btn');
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      alert('Cambios de stock confirmados');
+    });
+  }
+}
+
+// Load order management data
+async function loadOrderManagement() {
+  try {
+    const data = await apiCall('/orders/history');
+    if (data && data.success) {
+      displayOrderManagement(data.orders);
+    }
+  } catch (error) {
+    console.error('Error loading order management:', error);
+  }
+}
+
+// Display order management data
+function displayOrderManagement(orders) {
+  const orderManagementPanel = document.querySelector('#active_orders ul');
+  if (!orderManagementPanel) return;
+
+  orderManagementPanel.innerHTML = '';
+
+  if (orders.length === 0) {
+    orderManagementPanel.innerHTML = '<li>No hay pedidos para gestionar</li>';
+    return;
+  }
+
+  orders.forEach(order => {
+    const li = document.createElement('li');
+
+    // Extract product names
+    let productNames = '';
+    if (order.detalles && order.detalles.length > 0) {
+      productNames = order.detalles.map(detail => detail.producto).join(' - ');
+    }
+
+    const statusColors = {
+      'en_preparacion': '#e74c3c',
+      'completado': '#f39c12',
+      'entregado': '#27ae60',
+      'cancelado': '#95a5a6'
+    };
+
+    const statusText = {
+      'en_preparacion': 'En Preparación',
+      'completado': 'Completado',
+      'entregado': 'Entregado',
+      'cancelado': 'Cancelado'
+    };
+
+    li.innerHTML = `
+      <span>#${order.numero_pedido}</span>
+      <span>${productNames}</span>
+      <div class="order_status" style="background-color: ${statusColors[order.estado]};"
+           data-order-id="${order.id}"
+           data-current-status="${order.estado}">
+        ${statusText[order.estado]}
+      </div>
+      <button class="cancel-order-btn" data-order-id="${order.id}">CANCELAR</button>
+    `;
+
+    orderManagementPanel.appendChild(li);
+  });
+
+  // Add event listeners for status buttons
+  document.querySelectorAll('.order_status').forEach(statusBtn => {
+    statusBtn.addEventListener('click', async (e) => {
+      const orderId = e.target.dataset.orderId;
+      const currentStatus = e.target.dataset.currentStatus;
+
+      // Cycle through statuses
+      const statusFlow = ['en_preparacion', 'completado', 'entregado'];
+      const currentIndex = statusFlow.indexOf(currentStatus);
+
+      if (currentIndex < statusFlow.length - 1) {
+        const newStatus = statusFlow[currentIndex + 1];
+
+        try {
+          const data = await apiCall(`/orders/${orderId}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ estado: newStatus })
+          });
+
+          if (data && data.success) {
+            // Reload order management
+            loadOrderManagement();
+          }
+        } catch (error) {
+          console.error('Error updating order status:', error);
+        }
+      }
+    });
+  });
+
+  // Add event listeners for cancel buttons
+  document.querySelectorAll('.cancel-order-btn').forEach(cancelBtn => {
+    let holdTimer;
+
+    const startHold = () => {
+      holdTimer = setTimeout(async () => {
+        const orderId = cancelBtn.dataset.orderId;
+
+        try {
+          const data = await apiCall(`/orders/${orderId}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ estado: 'cancelado' })
+          });
+
+          if (data && data.success) {
+            loadOrderManagement();
+          }
+        } catch (error) {
+          console.error('Error canceling order:', error);
+        }
+      }, 1500); // 1.5 seconds hold
+    };
+
+    const cancelHold = () => {
+      clearTimeout(holdTimer);
+    };
+
+    cancelBtn.addEventListener('mousedown', startHold);
+    cancelBtn.addEventListener('mouseup', cancelHold);
+    cancelBtn.addEventListener('mouseleave', cancelHold);
+    cancelBtn.addEventListener('touchstart', startHold);
+    cancelBtn.addEventListener('touchend', cancelHold);
+  });
+}
+
+// Load reports
+async function loadReports() {
+  try {
+    const data = await apiCall('/reports/list');
+    if (data && data.success) {
+      displayReports(data.reports);
+    }
+  } catch (error) {
+    console.error('Error loading reports:', error);
+  }
+}
+
+// Display reports in the UI
+function displayReports(reports) {
+  const reportPanel = document.getElementById('report');
+  if (!reportPanel) return;
+
+  let html = '<h1>REPORTE COMBINADO</h1>';
+
+  // Show today's date
+  const today = new Date().toISOString().split('T')[0];
+  html += `<div>Reporte Hoy: ${today} <button class="generate-report-btn" data-date="${today}">Generar Reporte</button></div>`;
+
+  // Show existing reports
+  if (reports && reports.length > 0) {
+    reports.forEach(report => {
+      const dateStr = new Date(report.fecha).toLocaleDateString('es-CL');
+      html += `
+        <div>
+          Reporte ${dateStr}
+          <button class="download-report-btn" data-date="${report.fecha}">Descargar</button>
+          <button class="generate-report-btn" data-date="${report.fecha}">Generar Reporte</button>
+        </div>
+      `;
+    });
+  } else {
+    html += '<div>No hay reportes anteriores</div>';
+  }
+
+  reportPanel.innerHTML = html;
+
+  // Add event listeners for report buttons
+  document.querySelectorAll('.generate-report-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const date = e.target.dataset.date;
+
+      try {
+        const data = await apiCall(`/reports/generate/${date}`, {
+          method: 'POST'
+        });
+
+        if (data && data.success) {
+          alert('Reporte generado exitosamente');
+        }
+      } catch (error) {
+        console.error('Error generating report:', error);
+      }
+    });
+  });
+
+  document.querySelectorAll('.download-report-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const date = e.target.dataset.date;
+
+      // Download as JSON
+      window.open(`${API_BASE}/reports/download/${date}?format=json`, '_blank');
+    });
+  });
+}
 
 const PRODUCT_DATA = {
   sushi: [
