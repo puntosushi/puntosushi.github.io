@@ -1,35 +1,134 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { Pool } = require('pg');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 
 // Middleware
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: "http://localhost:3000",
     credentials: true
 }));
 app.use(express.json());
 
-// Database connection with fallback
-let pool;
+// JWT Secret
+const JWT_SECRET = "sushi-pos-local-secret-2024";
 
-try {
-    pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-    });
-    console.log('✅ Database connection configured');
-} catch (error) {
-    console.error('❌ Database connection error:', error.message);
-    console.log('🔄 Using mock data mode');
+// Datos locales simulados
+let localData = {
+    usuarios: [
+        { id: 1, username: 'admin', password: 'admin123', rol: 'admin', activo: true }
+    ],
+    pedidos: [],
+    productos: [
+        // Sushi
+        { id: 1, nombre: 'Sushi 12 unidades', categoria: 'sushi', precio_base: 3500, activo: true },
+        { id: 2, nombre: 'Sushi 24 unidades', categoria: 'sushi', precio_base: 7000, activo: true },
+        { id: 3, nombre: 'Sushi 36 unidades', categoria: 'sushi', precio_base: 10000, activo: true },
+        { id: 4, nombre: 'Sushi 48 unidades', categoria: 'sushi', precio_base: 12000, activo: true },
+        { id: 5, nombre: 'Sushi 60 unidades', categoria: 'sushi', precio_base: 14000, activo: true },
 
-    // Mock data for testing without database
-    pool = null;
+        // Handroll
+        { id: 6, nombre: 'Handroll Pollo/Kanikama 1x', categoria: 'handroll', precio_base: 3000, activo: true },
+        { id: 7, nombre: 'Handroll Pollo/Kanikama 2x', categoria: 'handroll', precio_base: 5000, activo: true },
+        { id: 8, nombre: 'Handroll Camarón', categoria: 'handroll', precio_base: 3500, activo: true },
+        { id: 9, nombre: 'Handroll Salmón', categoria: 'handroll', precio_base: 3500, activo: true },
+        { id: 10, nombre: 'Handroll Vacuno', categoria: 'handroll', precio_base: 3500, activo: true },
+
+        // SushiBurger
+        { id: 11, nombre: 'SushiBurger 1x', categoria: 'sushiburger', precio_base: 6500, activo: true },
+        { id: 12, nombre: 'SushiBurger 2x', categoria: 'sushiburger', precio_base: 11000, activo: true },
+
+        // Salchichas
+        { id: 13, nombre: 'Salchicha Italiana', categoria: 'salchicha', precio_base: 1000, activo: true },
+        { id: 14, nombre: 'Salchicha Palta Mayo', categoria: 'salchicha', precio_base: 1200, activo: true },
+        { id: 15, nombre: 'Salchicha Tomate Mayo', categoria: 'salchicha', precio_base: 1000, activo: true },
+        { id: 16, nombre: 'Salchicha Solo', categoria: 'salchicha', precio_base: 1000, activo: true },
+        { id: 17, nombre: 'Salchicha Dinámico', categoria: 'salchicha', precio_base: 1500, activo: true },
+
+        // Lomo
+        { id: 18, nombre: 'Lomo Italiano', categoria: 'lomo', precio_base: 3800, activo: true },
+        { id: 19, nombre: 'Lomo Palta Mayo', categoria: 'lomo', precio_base: 3800, activo: true },
+        { id: 20, nombre: 'Lomo Tomate Mayo', categoria: 'lomo', precio_base: 3800, activo: true },
+        { id: 21, nombre: 'Lomo Solo', categoria: 'lomo', precio_base: 3500, activo: true },
+        { id: 22, nombre: 'Lomo Luco', categoria: 'lomo', precio_base: 3800, activo: true },
+        { id: 23, nombre: 'Lomo Brasileño', categoria: 'lomo', precio_base: 4000, activo: true },
+
+        // Churrasco
+        { id: 24, nombre: 'Churrasco Italiano', categoria: 'churrasco', precio_base: 4000, activo: true },
+        { id: 25, nombre: 'Churrasco Palta Mayo', categoria: 'churrasco', precio_base: 4000, activo: true },
+        { id: 26, nombre: 'Churrasco Tomate Mayo', categoria: 'churrasco', precio_base: 4000, activo: true },
+        { id: 27, nombre: 'Churrasco Solo Carne', categoria: 'churrasco', precio_base: 3500, activo: true },
+        { id: 28, nombre: 'Churrasco Luco', categoria: 'churrasco', precio_base: 3500, activo: true },
+        { id: 29, nombre: 'Churrasco Brasileño', categoria: 'churrasco', precio_base: 4500, activo: true }
+    ],
+    stock: [
+        // Proteínas
+        { id: 1, ingrediente: 'Pollo', categoria: 'Proteínas', cantidad_disponible: 5000, unidad: 'gr', minimo_alerta: 500 },
+        { id: 2, ingrediente: 'Pollo Teriyaki', categoria: 'Proteínas', cantidad_disponible: 2000, unidad: 'gr', minimo_alerta: 300 },
+        { id: 3, ingrediente: 'Camarón', categoria: 'Proteínas', cantidad_disponible: 2000, unidad: 'gr', minimo_alerta: 250 },
+        { id: 4, ingrediente: 'Salmón', categoria: 'Proteínas', cantidad_disponible: 2500, unidad: 'gr', minimo_alerta: 300 },
+        { id: 5, ingrediente: 'Vacuno', categoria: 'Proteínas', cantidad_disponible: 4000, unidad: 'gr', minimo_alerta: 500 },
+        { id: 6, ingrediente: 'Lomo', categoria: 'Proteínas', cantidad_disponible: 3000, unidad: 'gr', minimo_alerta: 400 },
+
+        // Vegetales
+        { id: 7, ingrediente: 'Cebollín', categoria: 'Vegetales', cantidad_disponible: 1000, unidad: 'gr', minimo_alerta: 100 },
+        { id: 8, ingrediente: 'Ciboulette', categoria: 'Vegetales', cantidad_disponible: 800, unidad: 'gr', minimo_alerta: 80 },
+        { id: 9, ingrediente: 'Champiñón', categoria: 'Vegetales', cantidad_disponible: 1200, unidad: 'gr', minimo_alerta: 120 },
+        { id: 10, ingrediente: 'Choclo', categoria: 'Vegetales', cantidad_disponible: 1500, unidad: 'gr', minimo_alerta: 150 },
+        { id: 11, ingrediente: 'Palta', categoria: 'Vegetales', cantidad_disponible: 200, unidad: 'un', minimo_alerta: 20 },
+
+        // Otros
+        { id: 12, ingrediente: 'Tempura', categoria: 'Otros', cantidad_disponible: 2000, unidad: 'gr', minimo_alerta: 200 },
+        { id: 13, ingrediente: 'Sésamo Negro', categoria: 'Otros', cantidad_disponible: 800, unidad: 'gr', minimo_alerta: 80 },
+        { id: 14, ingrediente: 'Nori', categoria: 'Otros', cantidad_disponible: 500, unidad: 'un', minimo_alerta: 50 },
+        { id: 15, ingrediente: 'Queso', categoria: 'Otros', cantidad_disponible: 2000, unidad: 'gr', minimo_alerta: 200 },
+
+        // Extras
+        { id: 16, ingrediente: 'Mayo Industrial', categoria: 'Extras', cantidad_disponible: 3000, unidad: 'ml', minimo_alerta: 300 },
+        { id: 17, ingrediente: 'Coca-Cola Lata 350cc', categoria: 'Extras', cantidad_disponible: 50, unidad: 'un', minimo_alerta: 10 }
+    ],
+    reportes: [],
+    nextOrderId: 1,
+    nextOrderNumber: 1
+};
+
+// Funciones utilitarias para datos locales
+function saveData() {
+    try {
+        fs.writeFileSync('data.json', JSON.stringify(localData, null, 2));
+    } catch (error) {
+        console.log('No se pudo guardar datos (modo solo memoria)');
+    }
 }
+
+function loadData() {
+    try {
+        if (fs.existsSync('data.json')) {
+            const data = fs.readFileSync('data.json', 'utf8');
+            localData = { ...localData, ...JSON.parse(data) };
+            console.log('✅ Datos locales cargados');
+        } else {
+            console.log('🔄 Iniciando con datos nuevos');
+        }
+    } catch (error) {
+        console.log('🔄 Iniciando con datos por defecto');
+    }
+}
+
+function generateOrderNumber() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayOrders = localData.pedidos.filter(p => p.fecha === today);
+    const nextNumber = todayOrders.length + 1;
+    return nextNumber.toString().padStart(4, '0');
+}
+
+// Cargar datos al iniciar
+loadData();
+
+console.log('✅ Sistema iniciado con base de datos local simulada');
 
 // JWT middleware
 const authenticateToken = (req, res, next) => {
