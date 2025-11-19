@@ -139,7 +139,7 @@ const authenticateToken = (req, res, next) => {
         return res.status(401).json({ error: 'Token de autenticación requerido' });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
             return res.status(403).json({ error: 'Token inválido o expirado' });
         }
