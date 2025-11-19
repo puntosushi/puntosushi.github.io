@@ -200,72 +200,98 @@ app.get('/api/auth/verify', authenticateToken, (req, res) => {
 });
 
 // ORDERS ROUTES
-app.get('/api/orders/active', authenticateToken, async (req, res) => {
+app.get('/api/orders/active', authenticateToken, (req, res) => {
     try {
-        // Mock data for testing without database
-        if (!pool) {
-            const mockOrders = [
-                {
-                    id: 1,
-                    numero_pedido: '0001',
-                    estado: 'en_preparacion',
-                    creado_at: new Date(Date.now() - 5 * 60000).toISOString(),
-                    total: 7000,
-                    detalles: [
-                        {
-                            producto: 'Sushi 24 unidades',
-                            cantidad: 1,
-                            preferencias: { proteina: 'Pollo', vegetal: 'Palta', envoltura: 'Nori' },
-                            subtotal: 7000
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                    numero_pedido: '0002',
-                    estado: 'en_preparacion',
-                    creado_at: new Date(Date.now() - 2 * 60000).toISOString(),
-                    total: 3500,
-                    detalles: [
-                        {
-                            producto: 'Handroll Camarón',
-                            cantidad: 1,
-                            preferencias: { proteina: 'Camarón', vegetal: 'Cebollín' },
-                            subtotal: 3500
-                        }
-                    ]
-                }
-            ];
-            return res.json({ success: true, orders: mockOrders });
-        }
+        const today = new Date().toISOString().split('T')[0];
+        const activeOrders = localData.pedidos.filter(
+            p => p.fecha === today && !['entregado', 'cancelado'].includes(p.estado)
+        );
 
-        const result = await pool.query(`
-            SELECT
-                p.id,
-                p.numero_pedido,
-                p.estado,
-                p.creado_at,
-                p.total,
-                json_agg(
-                    json_build_object(
-                        'producto', pr.nombre,
-                        'cantidad', dp.cantidad,
-                        'preferencias', dp.preferencias,
-                        'subtotal', dp.subtotal
-                    )
-                ) as detalles
-            FROM pedidos p
-            LEFT JOIN detalle_pedidos dp ON p.id = dp.pedido_id
-            LEFT JOIN productos pr ON dp.producto_id = pr.id
-            WHERE p.fecha = CURRENT_DATE AND p.estado NOT IN ('entregado', 'cancelado')
-            GROUP BY p.id, p.numero_pedido, p.estado, p.creado_at, p.total
-            ORDER BY p.creado_at ASC
-        `);
-
-        res.json({ success: true, orders: result.rows });
+        res.json({ success: true, orders: activeOrders });
     } catch (error) {
         console.error('Error getting active orders:', error);
         res.status(500).json({ error: 'Error al obtener órdenes activas' });
+    }
+});
+
+app.post('/api/orders', authenticateToken, (req, res) => {
+    try {
+        const { items } = req.body;
+
+        if (!items || items.length === 0) {
+            return res.status(400).json({ error: 'El pedido debe tener al menos un item' });
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        const numeroPedido = generateOrderNumber();
+        const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+
+        const newOrder = {
+            id: localData.nextOrderId++,
+            numero_pedido: numeroPedido,
+            fecha: today,
+            estado: 'en_preparacion',
+            total: total,
+            creado_at: new Date().toISOString(),
+            actualizado_at: new Date().toISOString(),
+            detalles: items
+        };
+
+        localData.pedidos.push(newOrder);
+        saveData();
+
+        res.json({
+            success: true,
+            order: {
+                id: newOrder.id,
+                numero_pedido: newOrder.numero_pedido,
+                total: newOrder.total,
+                estado: newOrder.estado
+            }
+        });
+    } catch (error) {
+        console.error('Error creating order:', error);
+        res.status(500).json({ error: 'Error al crear el pedido' });
+    }
+});
+
+app.put('/api/orders/:id/status', authenticateToken, (req, res) => {
+    try {
+        const { id } = req.params;
+        const { estado } = req.body;
+
+        const validStates = ['en_preparacion', 'completado', 'entregado', 'cancelado'];
+        if (!validStates.includes(estado)) {
+            return res.status(400).json({ error: 'Estado inválido' });
+        }
+
+        const orderIndex = localData.pedidos.findIndex(p => p.id == id);
+        if (orderIndex === -1) {
+            return res.status(404).json({ error: 'Pedido no encontrado' });
+        }
+
+        localData.pedidos[orderIndex].estado = estado;
+        localData.pedidos[orderIndex].actualizado_at = new Date().toISOString();
+        saveData();
+
+        res.json({ success: true, order: localData.pedidos[orderIndex] });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ error: 'Error al actualizar estado del pedido' });
+    }
+});
+
+app.get('/api/orders/history', authenticateToken, (req, res) => {
+    try {
+        const { date } = req.query;
+        const queryDate = date || new Date().toISOString().split('T')[0];
+
+        const dayOrders = localData.pedidos.filter(p => p.fecha === queryDate);
+
+        res.json({ success: true, orders: dayOrders });
+    } catch (error) {
+        console.error('Error getting order history:', error);
+        res.status(500).json({ error: 'Error al obtener historial de pedidos' });
     }
 });
 
