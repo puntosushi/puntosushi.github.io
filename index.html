@@ -492,6 +492,41 @@
 
   </main>
 
+  <script>
+    // Check authentication before loading main app
+    (function() {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+
+      if (!token || !user) {
+        // Redirect to login if not authenticated
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Optional: Verify token is still valid
+      fetch('http://localhost:3001/api/auth/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (!data.success) {
+          // Token invalid, redirect to login
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = 'login.html';
+        }
+      })
+      .catch(() => {
+        // Error verifying token, redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+      });
+    })();
+  </script>
   <script src="script.js"></script>
 
 
