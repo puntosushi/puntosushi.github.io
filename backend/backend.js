@@ -338,6 +338,36 @@ app.get('/api/products', authenticateToken, async (req, res) => {
 // STOCK ROUTES
 app.get('/api/stock', authenticateToken, async (req, res) => {
     try {
+        // Mock data for testing without database
+        if (!pool) {
+            const mockStock = {
+                'Proteínas': [
+                    { id: 1, ingrediente: 'Pollo', categoria: 'Proteínas', cantidad_disponible: 5000, unidad: 'gr', minimo_alerta: 500 },
+                    { id: 2, ingrediente: 'Camarón', categoria: 'Proteínas', cantidad_disponible: 2000, unidad: 'gr', minimo_alerta: 250 },
+                    { id: 3, ingrediente: 'Salmón', categoria: 'Proteínas', cantidad_disponible: 2500, unidad: 'gr', minimo_alerta: 300 },
+                    { id: 4, ingrediente: 'Vacuno', categoria: 'Proteínas', cantidad_disponible: 4000, unidad: 'gr', minimo_alerta: 500 },
+                    { id: 5, ingrediente: 'Lomo', categoria: 'Proteínas', cantidad_disponible: 3000, unidad: 'gr', minimo_alerta: 400 }
+                ],
+                'Vegetales': [
+                    { id: 6, ingrediente: 'Cebollín', categoria: 'Vegetales', cantidad_disponible: 1000, unidad: 'gr', minimo_alerta: 100 },
+                    { id: 7, ingrediente: 'Palta', categoria: 'Vegetales', cantidad_disponible: 200, unidad: 'un', minimo_alerta: 20 },
+                    { id: 8, ingrediente: 'Champiñón', categoria: 'Vegetales', cantidad_disponible: 1200, unidad: 'gr', minimo_alerta: 120 },
+                    { id: 9, ingrediente: 'Choclo', categoria: 'Vegetales', cantidad_disponible: 1500, unidad: 'gr', minimo_alerta: 150 }
+                ],
+                'Otros': [
+                    { id: 10, ingrediente: 'Tempura', categoria: 'Otros', cantidad_disponible: 2000, unidad: 'gr', minimo_alerta: 200 },
+                    { id: 11, ingrediente: 'Nori', categoria: 'Otros', cantidad_disponible: 500, unidad: 'un', minimo_alerta: 50 },
+                    { id: 12, ingrediente: 'Queso', categoria: 'Otros', cantidad_disponible: 2000, unidad: 'gr', minimo_alerta: 200 }
+                ],
+                'Extras': [
+                    { id: 13, ingrediente: 'Mayo Industrial', categoria: 'Extras', cantidad_disponible: 3000, unidad: 'ml', minimo_alerta: 300 },
+                    { id: 14, ingrediente: 'Coca-Cola Lata 350cc', categoria: 'Extras', cantidad_disponible: 50, unidad: 'un', minimo_alerta: 10 },
+                    { id: 15, ingrediente: 'Fanta Lata 350cc', categoria: 'Extras', cantidad_disponible: 40, unidad: 'un', minimo_alerta: 8 }
+                ]
+            };
+            return res.json({ success: true, stock: mockStock });
+        }
+
         const result = await pool.query(`
             SELECT * FROM stock
             ORDER BY categoria, ingrediente
