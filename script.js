@@ -545,34 +545,6 @@ function closeDialog() {
   overlay.style.display = "none";
 }
 
-// Agregar al resumen
-function addToSummary(name, price) {
-  const list = document.querySelector("#summary_order_panel ul");
-  const li = document.createElement("li");
-
-  li.innerHTML = `
-    <span class="order_product_summary">${name}</span>
-    <span class="order_value">$${price.toLocaleString()}</span>
-  `;
-
-  list.appendChild(li);
-
-  updateTotal();
-}
-
-// Recalcular total
-function updateTotal() {
-  const values = [...document.querySelectorAll(".order_value")];
-  let total = 0;
-
-  values.forEach(v => {
-    const num = Number(v.textContent.replace("$", "").replace(".", "").replace(",", ""));
-    total += num;
-  });
-
-  document.getElementById("order_total_value").textContent =
-    "$" + total.toLocaleString();
-}
 
 // Activar botones del panel principal
 document.querySelectorAll("#products_panel .product_option").forEach(opt => {
