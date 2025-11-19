@@ -72,8 +72,20 @@ span .green {color: green;}
   height: 20px;
 }
 
-#sidebar.collapsed li span {
+/* Default: Hide sidebar text labels */
+#sidebar li span {
   display: none;
+  white-space: nowrap;
+}
+
+/* Show text on hover */
+#sidebar li:hover span {
+  display: inline;
+}
+
+/* Expanded state: Always show text */
+#sidebar:not(.collapsed) li span {
+  display: inline;
 }
 
 /* === MAIN === */
