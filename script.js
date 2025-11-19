@@ -625,23 +625,121 @@ function onStepChange(step) {
 activateStepper("productos");
 
 
+// Order data storage
+let orderItems = [];
+
+// Add to summary with real order tracking
+function addToSummary(name, price, productId = 1, preferences = {}) {
+  const list = document.querySelector("#summary_order_panel ul");
+  const li = document.createElement("li");
+
+  // Generate unique ID for this order item
+  const orderItemId = Date.now() + Math.random();
+
+  li.innerHTML = `
+    <span class="order_product_summary" data-order-item-id="${orderItemId}">${name}</span>
+    <span class="order_value">$${price.toLocaleString()}</span>
+    <button class="remove-item-btn" data-order-item-id="${orderItemId}">[X]</button>
+  `;
+
+  list.appendChild(li);
+
+  // Store order item data
+  orderItems.push({
+    id: orderItemId,
+    name: name,
+    price: price,
+    producto_id: productId,
+    preferencias: preferences,
+    cantidad: 1,
+    subtotal: price
+  });
+
+  updateTotal();
+
+  // Add event listener for remove button
+  li.querySelector('.remove-item-btn').addEventListener('click', (e) => {
+    const itemId = parseInt(e.target.dataset.orderItemId);
+    orderItems = orderItems.filter(item => item.id !== itemId);
+    li.remove();
+    updateTotal();
+  });
+}
+
+// Recalculate total
+function updateTotal() {
+  const values = [...document.querySelectorAll(".order_value")];
+  let total = 0;
+
+  values.forEach(v => {
+    const num = Number(v.textContent.replace("$", "").replace(".", "").replace(",", ""));
+    total += num;
+  });
+
+  document.getElementById("order_total_value").textContent =
+    "$" + total.toLocaleString();
+}
+
 // BOTON DE CONFIRMAR PEDIDO
-// Visual de carga 
+// Visual de carga
 const confirmBtn = document.getElementById("order_confirm");
 
 let holdTimer;
 
-confirmBtn.addEventListener("mousedown", () => {
+confirmBtn.addEventListener("mousedown", async () => {
+  if (orderItems.length === 0) {
+    alert('Debes agregar al menos un producto al pedido');
+    return;
+  }
+
   confirmBtn.classList.add("loading");
 
-  holdTimer = setTimeout(() => {
-    console.log("Acción confirmada después de 2s");
-    // acción final aquí
+  holdTimer = setTimeout(async () => {
+    try {
+      // Prepare order data
+      const orderData = {
+        items: orderItems.map(item => ({
+          producto_id: item.producto_id,
+          cantidad: item.cantidad,
+          preferencias: item.preferencias,
+          subtotal: item.subtotal
+        }))
+      };
+
+      // Send order to API
+      const data = await apiCall('/orders', {
+        method: 'POST',
+        body: JSON.stringify(orderData)
+      });
+
+      if (data && data.success) {
+        alert(`Pedido #${data.order.numero_pedido} creado exitosamente!`);
+
+        // Clear order summary
+        orderItems = [];
+        document.querySelector("#summary_order_panel ul").innerHTML = '';
+        updateTotal();
+
+        // Refresh active orders display
+        loadActiveOrders();
+
+        // Reset stepper to products
+        activateStepper("productos");
+      } else {
+        alert('Error al crear el pedido. Intenta nuevamente.');
+      }
+    } catch (error) {
+      console.error('Error creating order:', error);
+      alert('Error de conexión. Intenta nuevamente.');
+    } finally {
+      confirmBtn.classList.remove("loading");
+    }
   }, 2000);
 });
 
 confirmBtn.addEventListener("mouseup", cancelHold);
 confirmBtn.addEventListener("mouseleave", cancelHold);
+confirmBtn.addEventListener("touchend", cancelHold);
 
 function cancelHold() {
   clearTimeout(holdTimer);
