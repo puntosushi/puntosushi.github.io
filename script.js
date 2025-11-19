@@ -504,36 +504,69 @@ const dialog = document.getElementById("product_dialog");
 const dialogTitle = document.getElementById("dialog_title");
 const dialogOptions = document.getElementById("dialog_options");
 
-// Abrir panel
-function openProductDialog(productId, productName) {
-  const options = PRODUCT_DATA[productId];
+// Load products from API
+async function loadProductsForDialog(productType, productName) {
+  try {
+    const data = await apiCall(`/products?categoria=${productType}`);
+    if (data && data.success) {
+      return data.products;
+    }
+  } catch (error) {
+    console.error('Error loading products:', error);
+  }
+  return PRODUCT_DATA[productType] || [];
+}
 
+// Abrir panel
+async function openProductDialog(productId, productName) {
   dialogTitle.textContent = productName;
+  dialogOptions.innerHTML = "<p>Cargando productos...</p>";
+  overlay.style.display = "flex";
+
+  // Try to load from API first, fallback to local data
+  let options;
+  try {
+    const products = await loadProductsForDialog(productId, productName);
+    options = products.map(product => ({
+      label: product.nombre,
+      price: product.precio_base,
+      productId: product.id,
+      ingredientes: product.ingredientes
+    }));
+  } catch (error) {
+    // Fallback to local data
+    options = PRODUCT_DATA[productId] || [];
+  }
 
   dialogOptions.innerHTML = "";
 
   if (!options || options.length === 0) {
-    dialogOptions.innerHTML = `<p>Sin productos para mostrar. Mejora tu plan para agregar productos.</p>`;
-  } else {
-    options.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.className = "dialog_option_btn";
-
-      let text = `${opt.label} - $${opt.price.toLocaleString()}`;
-      if (opt.promo) text += ` (${opt.promo})`;
-
-      btn.textContent = text;
-
-      btn.addEventListener("click", () => {
-        addToSummary(productName + " " + opt.label, opt.price);
-        closeDialog();
-      });
-
-      dialogOptions.appendChild(btn);
-    });
+    dialogOptions.innerHTML = `<p>Sin productos para mostrar.</p>`;
+    return;
   }
 
-  overlay.style.display = "flex";
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "dialog_option_btn";
+
+    let text = `${opt.label} - $${opt.price.toLocaleString()}`;
+    if (opt.promo) text += ` (${opt.promo})`;
+
+    btn.textContent = text;
+
+    btn.addEventListener("click", () => {
+      const preferences = opt.ingredientes || {};
+      addToSummary(
+        productName + " " + opt.label,
+        opt.price,
+        opt.productId || 1,
+        preferences
+      );
+      closeDialog();
+    });
+
+    dialogOptions.appendChild(btn);
+  });
 }
 
 // Cerrar al hacer clic afuera
