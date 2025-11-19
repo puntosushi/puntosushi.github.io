@@ -14,11 +14,22 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Database connection
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || "postgresql://username:password@ep-falling-frost-a4hdm4ge-pooler.us-east-1.aws.neon.tech/dbname?sslmode=require",
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
+// Database connection with fallback
+let pool;
+
+try {
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    });
+    console.log('✅ Database connection configured');
+} catch (error) {
+    console.error('❌ Database connection error:', error.message);
+    console.log('🔄 Using mock data mode');
+
+    // Mock data for testing without database
+    pool = null;
+}
 
 // JWT middleware
 const authenticateToken = (req, res, next) => {
