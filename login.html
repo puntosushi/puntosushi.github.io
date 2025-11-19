@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Login - Sistema Punto de Sushi</title>
+  <link rel="icon" href="res/logo.png" type="image/x-icon">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e1e2f 0%, #0f0e0c 100%);
+    }
+
+    .login-card {
+      background: #2f2f47;
+      border-radius: 12px;
+      padding: 3rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-header h1 {
+      color: #ffffff;
+      font-family: 'Martian Mono', monospace;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-header p {
+      color: #b0b0b0;
+      font-family: 'Martian Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      color: #ffffff;
+      font-family: 'Martian Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      background: #1e1e2f;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      color: #ffffff;
+      font-family: 'Martian Mono', monospace;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #666;
+    }
+
+    .login-button {
+      background: #6366f1;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      font-family: 'Martian Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .login-button:hover {
+      background: #5558e3;
+      transform: translateY(-1px);
+    }
+
+    .login-button:disabled {
+      background: #444;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 0.8rem;
+      color: #fca5a5;
+      font-family: 'Martian Mono', monospace;
+      font-size: 0.9rem;
+      text-align: center;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #666;
+      font-family: 'Martian Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo-container img {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+    }
+
+    /* Loading state */
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .login-button.loading .button-text {
+      opacity: 0;
+    }
+
+    .login-button .loading-spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+
+    .login-button.loading .loading-spinner {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo-container">
+        <img src="res/logo.png" alt="Sushi POS Logo">
+      </div>
+
+      <div class="login-header">
+        <h1>Sistema Punto de Sushi</h1>
+        <p>Inicia sesión para continuar</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label for="username">Usuario</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Ingresa tu usuario"
+            required
+            autocomplete="username"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Ingresa tu contraseña"
+            required
+            autocomplete="current-password"
+            minlength="6"
+          >
+        </div>
+
+        <button type="submit" class="login-button" id="loginButton">
+          <span class="button-text">Iniciar Sesión</span>
+          <div class="loading-spinner"></div>
+        </button>
+      </form>
+
+      <div id="errorMessage" class="error-message"></div>
+
+      <div class="login-footer">
+        <p>Usuario por defecto: admin / admin123</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // API base URL
+    const API_BASE = 'http://localhost:3001/api';
+
+    // DOM elements
+    const loginForm = document.getElementById('loginForm');
+    const loginButton = document.getElementById('loginButton');
+    const errorMessage = document.getElementById('errorMessage');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    // Form submission
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        showError('Por favor, completa todos los campos');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+
+      setLoading(true);
+      hideError();
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // Store token and user info
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          // Redirect to main application
+          window.location.href = 'index.html';
+        } else {
+          showError(data.error || 'Credenciales inválidas');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showError('Error de conexión. Intenta nuevamente.');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Utility functions
+    function setLoading(loading) {
+      if (loading) {
+        loginButton.classList.add('loading');
+        loginButton.disabled = true;
+      } else {
+        loginButton.classList.remove('loading');
+        loginButton.disabled = false;
+      }
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add('show');
+    }
+
+    function hideError() {
+      errorMessage.classList.remove('show');
+    }
+
+    // Check if user is already logged in
+    function checkExistingSession() {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+
+      if (token && user) {
+        // Verify token is still valid
+        fetch(`${API_BASE}/auth/verify`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            window.location.href = 'index.html';
+          } else {
+            // Token invalid, clear storage
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
+        })
+        .catch(() => {
+          // Error verifying token, clear storage
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        });
+      }
+    }
+
+    // Auto-focus username field
+    usernameInput.focus();
+
+    // Check for existing session on load
+    checkExistingSession();
+
+    // Add enter key support for form fields
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        loginForm.dispatchEvent(new Event('submit'));
+      }
+    });
+  </script>
+</body>
+</html>
