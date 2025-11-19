@@ -68,6 +68,30 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(400).json({ error: 'Usuario y contraseña son requeridos' });
         }
 
+        // Mock user for testing without database
+        if (!pool) {
+            if (username === 'admin' && password === 'admin123') {
+                const token = jwt.sign(
+                    { userId: 1, username: 'admin', rol: 'admin' },
+                    process.env.JWT_SECRET,
+                    { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+                );
+
+                return res.json({
+                    success: true,
+                    token,
+                    user: {
+                        id: 1,
+                        username: 'admin',
+                        rol: 'admin'
+                    }
+                });
+            } else {
+                return res.status(401).json({ error: 'Credenciales inválidas' });
+            }
+        }
+
+        // Database authentication
         const userResult = await pool.query(
             'SELECT * FROM usuarios WHERE username = $1 AND activo = true',
             [username]
